@@ -2,8 +2,16 @@
 
 set -e
 
+if [ ! -f .modules.json ]; then
+  wget -O .modules.json "https://github.com/innolitics/dicom-standard/raw/master/standard/modules.json"
+fi
+
 if [ ! -f .attributes.json ]; then
-  wget -O .attributes.json "https://github.com/innolitics/dicom-standard/raw/master/standard/module_to_attributes.json"
+  wget -O .attributes.json "https://github.com/innolitics/dicom-standard/raw/master/standard/attributes.json"
+fi
+
+if [ ! -f .module_to_attributes.json ]; then
+  wget -O .module_to_attributes.json "https://github.com/innolitics/dicom-standard/raw/master/standard/module_to_attributes.json"
 fi
 
 if [ -d modules ]; then
@@ -13,9 +21,10 @@ fi
 
 mkdir modules
 
-MODULE_LIST=$(jq -r '.[].module' < .attributes.json | uniq)
+jq -s '([ .[0] | to_entries | .[].value  ] | map({ (.tag): .  }) | add) * ([ .[1] | to_entries | .[].value  ] | map({ (.tag): .  }) | add) | to_entries | [ .[].value  ]' \
+  .attributes.json .module_to_attributes.json > .compound.json
 
-export PYTHONUNBUFFERED=1
+MODULE_LIST=$(jq -r '.[] | select(.module != null) | .module' < .compound.json | sort | uniq)
 
 show_progress() {
   if python3 -c "import tqdm" 2>/dev/null; then
@@ -27,8 +36,7 @@ show_progress() {
 
 for MODULE in $MODULE_LIST; do
   echo "Building '$MODULE'..."
-  jq -c "[ .[] | select(.module == \"$MODULE\") ]" < .attributes.json > modules/${MODULE}.json
+  jq -s -c ".[0][\"$MODULE\"] + { attributes: .[1] | [ .[] | select(.module == \"$MODULE\") ] }" .modules.json .compound.json > modules/${MODULE}.json
 done | show_progress
 
-
-rm -rf .attributes.json .modules-bak
+rm -rf .modules-bak

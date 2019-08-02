@@ -1,3 +1,6 @@
 /modules/
+/.modules.json
 /.attributes.json
+/.module_to_attributes.json
+/.compound.json
 /.modules-bak/
