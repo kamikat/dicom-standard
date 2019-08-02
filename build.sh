@@ -21,7 +21,7 @@ fi
 
 mkdir modules
 
-jq -s '([ .[0] | to_entries | .[].value  ] | map({ (.tag): .  }) | add) * ([ .[1] | to_entries | .[].value  ] | map({ (.tag): .  }) | add) | to_entries | [ .[].value  ]' \
+jq -s '([ .[0] | to_entries | .[].value   ] | map({ (.tag): .   }) | add) as $attrs | .[1] | map($attrs[.tag] + .)' \
   .attributes.json .module_to_attributes.json > .compound.json
 
 MODULE_LIST=$(jq -r '.[] | select(.module != null) | .module' < .compound.json | sort | uniq)
