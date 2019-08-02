@@ -1,0 +1,27 @@
+{
+  "name": "dicom-standard",
+  "version": "1.0.1",
+  "description": "DICOM attribute modules.",
+  "files": [
+    "modules/*"
+  ],
+  "scripts": {
+    "build": "bash build.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kamikat/dicom-standard.git"
+  },
+  "keywords": [
+    "dicom",
+    "json",
+    "standard",
+    "nema"
+  ],
+  "author": "kamikat <kamikat@banana.moe>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kamikat/dicom-standard/issues"
+  },
+  "homepage": "https://github.com/kamikat/dicom-standard#readme"
+}
